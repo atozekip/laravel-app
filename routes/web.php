@@ -1,6 +1,9 @@
 <?php
 
+use App\Models\UploadFile;
 use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,9 +19,6 @@ Route::get('/hello/{name}', function ($name) {
 
 Route::resource('users', UserController::class);
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-
 Route::get('/upload', function () {
     return view('upload');
 });
@@ -28,7 +28,22 @@ Route::post('/upload', function (Request $request) {
         'file' => ['required', 'file', 'max:2048'],
     ]);
 
-    $path = $request->file('file')->store('uploads', 's3');
+    $file = $request->file('file');
 
-    return back()->with('message', 'アップロード成功: ' . $path);
+    $path = $file->store('uploads', 's3');
+
+    UploadFile::create([
+        'original_name' => $file->getClientOriginalName(),
+        'path' => $path,
+        'mime_type' => $file->getMimeType(),
+        'size' => $file->getSize(),
+    ]);
+
+    return redirect('/upload/files');
+});
+
+Route::get('/upload/files', function () {
+    $files = UploadFile::latest()->get();
+
+    return view('upload-files', compact('files'));
 });
