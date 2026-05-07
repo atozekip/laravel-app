@@ -45,5 +45,17 @@ Route::post('/upload', function (Request $request) {
 Route::get('/upload/files', function () {
     $files = UploadFile::latest()->get();
 
+    // URL生成
+    foreach ($files as $file) {
+        $file->url = Storage::disk('s3')->temporaryUrl(
+            $file->path,
+            now()->addMinutes(5),
+            [
+                'ResponseContentDisposition' => 'attachment; filename="' . $file->original_name . '"',
+            ]
+
+        );
+    }
+
     return view('upload-files', compact('files'));
 });
