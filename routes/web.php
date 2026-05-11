@@ -59,3 +59,11 @@ Route::get('/upload/files', function () {
 
     return view('upload-files', compact('files'));
 });
+
+Route::delete('/upload/files/{file}', function (\App\Models\UploadFile $file) {
+    Storage::disk('s3')->delete($file->path);
+
+    $file->delete();
+
+    return redirect('/upload/files');
+});

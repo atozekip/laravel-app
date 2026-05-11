@@ -9,10 +9,12 @@
         / {{ $file->path }}
         / {{ $file->size }} bytes
 
-        <a href="{{ $file->url }}" target="_blank">
-            ダウンロード
-        </a>
+        <a href="{{ $file->url }}" target="_blank">ダウンロード</a>
 
+        <form method="POST" action="/upload/files/{{ $file->id }}" style="display:inline;">
+            @csrf
+            @method('DELETE')
+            <button type="submit">削除</button>
+        </form>
     </li>
 @endforeach
-</ul>
