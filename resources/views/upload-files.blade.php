@@ -1,5 +1,10 @@
 <h1>アップロードファイル一覧</h1>
 
+<form method="POST" action="/logout">
+    @csrf
+    <button type="submit">ログアウト</button>
+</form>
+
 <p><a href="/upload">アップロード画面へ</a></p>
 
 <ul>
