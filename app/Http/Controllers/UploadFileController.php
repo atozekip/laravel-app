@@ -10,7 +10,9 @@ class UploadFileController extends Controller
 {
     public function index()
     {
-        $files = UploadFile::latest()->get();
+        $files = UploadFile::where('user_id', auth()->id())
+            ->latest()
+            ->get();
 
         foreach ($files as $file) {
             $file->url = Storage::disk('s3')->temporaryUrl(
@@ -42,6 +44,7 @@ class UploadFileController extends Controller
         $path = $file->store('uploads', 's3');
 
         UploadFile::create([
+            'user_id' => auth()->id(),
             'original_name' => $file->getClientOriginalName(),
             'path' => $path,
             'mime_type' => $file->getMimeType(),
